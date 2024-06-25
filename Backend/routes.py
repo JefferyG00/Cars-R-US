@@ -1,6 +1,8 @@
 from app import app, db
 from flask import request, jsonify
-from models import Car, Dealership
+from models import Car, Dealership, Customer, Sale, ServiceAppointment
+from datetime import datetime
+
 
 @app.route('/')
 def hello_world():
