@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Cars from './Sales';
+import cars from './Sales';
 
 const CarList = () => {
     const [cars, setCars] = useState([]);
@@ -23,4 +23,4 @@ const CarList = () => {
     );
 };
 
-export default Cars;
+export default CarList;
