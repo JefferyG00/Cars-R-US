@@ -1,7 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
-
+from app import db
 
 class Car(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -10,12 +7,18 @@ class Car(db.Model):
     year = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
     dealership_id = db.Column(db.Integer, db.ForeignKey('dealership.id'), nullable=False)
+    dealership = db.relationship('Dealership', backref=db.backref('cars', lazy=True))
+
+    def __repr__(self):
+        return f'<Car {self.make} {self.model}>'
 
 class Dealership(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     location = db.Column(db.String(120), nullable=False)
-    cars = db.relationship('Car', backref='dealership', lazy=True)
+
+    def __repr__(self):
+        return f'<Dealership {self.name}>'
 
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)

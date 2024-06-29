@@ -1,12 +1,12 @@
 import React from 'react';
 
-const Cars = () => {
+const Sales = () => {
   return (
     <div>
-      <h2>Cars</h2>
-      <p>List of Cars will be displayed here.</p>
+      <h2>Sales</h2>
+      <p>List of Transactions will be displayed here.</p>
     </div>
   );
 };
 
-export default Cars;
+export default Sales;
