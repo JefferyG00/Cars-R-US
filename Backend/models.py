@@ -32,7 +32,18 @@ class Sale(db.Model):
     date = db.Column(db.DateTime, nullable=False)
 
 class ServiceAppointment(db.Model):
+    __tablename__ = 'service_appointment'
     id = db.Column(db.Integer, primary_key=True)
-    car_id = db.Column(db.Integer, db.ForeignKey('car.id'), nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
-    description = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    car_id = db.Column(db.Integer, db.ForeignKey('car.id'), nullable=True) 
+
+
+
+class Cart(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    service_id = db.Column(db.Integer, db.ForeignKey('service_appointment.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False, default=1)
+    customer = db.relationship('Customer', backref='cart_items', lazy=True)
+    service = db.relationship('ServiceAppointment', backref='cart_items', lazy=True)

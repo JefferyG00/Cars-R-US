@@ -1,8 +1,6 @@
 from app import app, db
 from flask import request, jsonify
-from models import Car, Dealership, Customer, Sale, ServiceAppointment
-from datetime import datetime
-
+from models import Car, Dealership, Customer, Sale, ServiceAppointment, Cart
 
 @app.route('/')
 def hello_world():
@@ -50,3 +48,56 @@ def add_car():
     db.session.add(new_car)
     db.session.commit()
     return jsonify({'message': 'Car added successfully'}), 201
+
+@app.route('/serviceappointments', methods=['GET'])
+def get_serviceappointments():
+    services = ServiceAppointment.query.all()
+    return jsonify([{
+        'id': service.id,
+        'description': service.description,
+        'price': service.price
+    } for service in services])
+
+@app.route('/serviceappointments', methods=['POST'])
+def add_serviceappointment():
+    data = request.json
+    new_service = ServiceAppointment(
+        description=data['description'],
+        price=data['price']
+    )
+    db.session.add(new_service)
+    db.session.commit()
+    return jsonify({'message': 'Service appointment added successfully'}), 201
+
+@app.route('/cart', methods=['GET'])
+def get_cart():
+    customer_id = request.args.get('customer_id')
+    cart_items = Cart.query.filter_by(customer_id=customer_id).all()
+    return jsonify([{
+        'id': item.id,
+        'service_id': item.service_id,
+        'service_description': item.service.description,
+        'quantity': item.quantity
+    } for item in cart_items])
+
+@app.route('/cart', methods=['POST'])
+def add_to_cart():
+    data = request.json
+    new_cart_item = Cart(
+        customer_id=data['customer_id'],
+        service_id=data['service_id'],
+        quantity=data['quantity']
+    )
+    db.session.add(new_cart_item)
+    db.session.commit()
+    return jsonify({'message': 'Service added to cart successfully'}), 201
+
+@app.route('/cart/<int:id>', methods=['DELETE'])
+def remove_from_cart(id):
+    cart_item = Cart.query.get(id)
+    if not cart_item:
+        return jsonify({'message': 'Cart item not found'}), 404
+
+    db.session.delete(cart_item)
+    db.session.commit()
+    return jsonify({'message': 'Cart item removed successfully'}), 200
