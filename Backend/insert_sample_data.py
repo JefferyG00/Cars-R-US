@@ -12,3 +12,5 @@ with app.app_context():
     db.session.commit()
 
     print("Sample data added successfully!")
+
+    

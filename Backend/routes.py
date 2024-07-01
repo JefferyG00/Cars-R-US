@@ -1,5 +1,5 @@
-from app import app, db
 from flask import request, jsonify
+from app import app, db
 from models import Car, Dealership, Customer, Sale, ServiceAppointment, Cart
 
 @app.route('/')
@@ -101,3 +101,26 @@ def remove_from_cart(id):
     db.session.delete(cart_item)
     db.session.commit()
     return jsonify({'message': 'Cart item removed successfully'}), 200
+
+@app.route('/sales', methods=['GET'])
+def get_sales():
+    sales = Sale.query.all()
+    sales_list = []
+    for sale in sales:
+        car = Car.query.get(sale.car_id)
+        customer = Customer.query.get(sale.customer_id)
+        sales_list.append({
+            'id': sale.id,
+            'car': {
+                'make': car.make,
+                'model': car.model,
+                'year': car.year,
+                'price': car.price
+            },
+            'customer': {
+                'name': customer.name,
+                'email': customer.email
+            },
+            'date': sale.date.strftime('%Y-%m-%d %H:%M:%S')
+        })
+    return jsonify(sales_list)

@@ -30,7 +30,9 @@ class Sale(db.Model):
     car_id = db.Column(db.Integer, db.ForeignKey('car.id'), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     date = db.Column(db.DateTime, nullable=False)
-
+    car = db.relationship('Car', backref='sales')
+    customer = db.relationship('Customer', backref='sales')
+    
 class ServiceAppointment(db.Model):
     __tablename__ = 'service_appointment'
     id = db.Column(db.Integer, primary_key=True)
