@@ -174,3 +174,37 @@ def get_sales():
     return jsonify(sales_list)
 
 
+@app.route('/customers', methods=['GET'])
+def get_customers():
+    customers = Customer.query.all()
+    return jsonify([{
+        'id': customer.id,
+        'name': customer.name,
+        'email': customer.email
+    } for customer in customers])
+
+@app.route('/customers/<int:customer_id>/reviews', methods=['GET'])
+def get_reviews(customer_id):
+    customer = Customer.query.get_or_404(customer_id)
+    reviews = Review.query.filter_by(customer_id=customer_id).all()
+    return jsonify([{
+        'id': review.id,
+        'comment': review.comment,
+        'rating': review.rating,
+        'created_at': review.created_at.strftime('%Y-%m-%d %H:%M:%S')
+    } for review in reviews])
+
+def seed_dummy_data():
+    db.drop_all()
+    db.create_all()
+
+    customer1 = Customer(name='John Doe', email='john.doe@example.com')
+    customer2 = Customer(name='Jane Smith', email='jane.smith@example.com')
+    db.session.add_all([customer1, customer2])
+    db.session.commit()
+
+    review1 = Review(customer_id=customer1.id, comment='Excellent service!', rating=5)
+    review2 = Review(customer_id=customer1.id, comment='Very satisfied with the purchase.', rating=4)
+    review3 = Review(customer_id=customer2.id, comment='Average experience.', rating=3)
+    db.session.add_all([review1, review2, review3])
+    db.session.commit()

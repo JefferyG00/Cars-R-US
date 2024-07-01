@@ -1,4 +1,5 @@
 from app import db
+from datetime import datetime
 
 class Car(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,6 +25,17 @@ class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
+
+class Review(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    comment = db.Column(db.Text, nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    customer = db.relationship('Customer', back_populates='reviews')
+
+Customer.reviews = db.relationship('Review', order_by=Review.id, back_populates='customer')
 
 class Sale(db.Model):
     id = db.Column(db.Integer, primary_key=True)
