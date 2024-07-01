@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app import app, db
-from models import Car, Dealership, Customer, Sale, ServiceAppointment, Cart
+from models import Car, Dealership, Customer, Sale, ServiceAppointment, Cart, Review
 
 @app.route('/')
 def hello_world():

@@ -7,10 +7,11 @@ import Customers from './components/Customers';
 import Sales from './components/Sales';
 import ServiceAppointments from './components/ServiceAppointments';
 import Cart from './components/Cart';
+import './styles.css';
 
 const App = () => {
 
-  
+
   const [cartItems, setCartItems] = useState([]);
 
   const addToCart = (service) => {
@@ -25,7 +26,7 @@ const App = () => {
 
   return (
     <Router>
-      <div>
+      <div className="container">
         <Navbar />
         <Routes>
           <Route path="/dealerships" element={<Dealerships />} />
