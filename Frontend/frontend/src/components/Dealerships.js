@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './DealershipList.css';
 
 const DealershipList = () => {
     const [dealerships, setDealerships] = useState([]);
@@ -11,7 +12,7 @@ const DealershipList = () => {
     }, []);
 
     return (
-        <div>
+        <div className="container">
             <h1>Dealerships</h1>
             <ul>
                 {dealerships.map(dealership => (
@@ -23,3 +24,4 @@ const DealershipList = () => {
 };
 
 export default DealershipList;
+
