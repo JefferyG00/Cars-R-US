@@ -69,28 +69,76 @@ def add_serviceappointment():
     db.session.commit()
     return jsonify({'message': 'Service appointment added successfully'}), 201
 
+@app.route('/add-to-cart', methods=['POST'])
+def add_to_cart():
+    data = request.json
+    customer_id = data.get('customer_id')
+    item_type = data.get('item_type')  # 'car' or 'service'
+    item_id = data.get('item_id')
+    quantity = data.get('quantity', 1)  # Default quantity to 1 if not provided
+
+    # Validate input data
+    if not customer_id or not item_type or not item_id:
+        return jsonify({'error': 'Customer ID, Item Type, and Item ID are required'}), 400
+
+    # Check if the item exists and add to cart
+    if item_type == 'car':
+        item = Car.query.get(item_id)
+    elif item_type == 'service':
+        item = ServiceAppointment.query.get(item_id)
+    else:
+        return jsonify({'error': 'Invalid item type'}), 400
+
+    if not item:
+        return jsonify({'error': 'Item not found'}), 404
+
+    # Create or update cart item
+    cart_item = Cart.query.filter_by(customer_id=customer_id, item_type=item_type, item_id=item_id).first()
+    if cart_item:
+        cart_item.quantity += quantity
+    else:
+        cart_item = Cart(customer_id=customer_id, item_type=item_type, item_id=item_id, quantity=quantity)
+        db.session.add(cart_item)
+
+    db.session.commit()
+    return jsonify({'message': 'Item added to cart successfully'}), 201
+
+
 @app.route('/cart', methods=['GET'])
 def get_cart():
     customer_id = request.args.get('customer_id')
     cart_items = Cart.query.filter_by(customer_id=customer_id).all()
-    return jsonify([{
-        'id': item.id,
-        'service_id': item.service_id,
-        'service_description': item.service.description,
-        'quantity': item.quantity
-    } for item in cart_items])
 
-@app.route('/cart', methods=['POST'])
-def add_to_cart():
-    data = request.json
-    new_cart_item = Cart(
-        customer_id=data['customer_id'],
-        service_id=data['service_id'],
-        quantity=data['quantity']
-    )
-    db.session.add(new_cart_item)
-    db.session.commit()
-    return jsonify({'message': 'Service added to cart successfully'}), 201
+    items_in_cart = []
+    for item in cart_items:
+        if item.item_type == 'car':
+            car = Car.query.get(item.item_id)
+            if car:
+                items_in_cart.append({
+                    'id': item.id,
+                    'item_type': 'car',
+                    'item': {
+                        'make': car.make,
+                        'model': car.model,
+                        'year': car.year,
+                        'price': car.price
+                    },
+                    'quantity': item.quantity
+                })
+        elif item.item_type == 'service':
+            service = ServiceAppointment.query.get(item.item_id)
+            if service:
+                items_in_cart.append({
+                    'id': item.id,
+                    'item_type': 'service',
+                    'item': {
+                        'description': service.description,
+                        'price': service.price
+                    },
+                    'quantity': item.quantity
+                })
+
+    return jsonify(items_in_cart)
 
 @app.route('/cart/<int:id>', methods=['DELETE'])
 def remove_from_cart(id):
@@ -124,3 +172,5 @@ def get_sales():
             'date': sale.date.strftime('%Y-%m-%d %H:%M:%S')
         })
     return jsonify(sales_list)
+
+

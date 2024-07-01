@@ -16,7 +16,6 @@ migrate = Migrate(app, db)
 
 # Register routes
 from routes import *
-from models import *
 
 
 from seed import create_fake_data
@@ -29,4 +28,6 @@ if __name__ == '__main__':
         db.create_all()
         print("Database tables created successfully!")
     app.run(debug=True)
+
+
 

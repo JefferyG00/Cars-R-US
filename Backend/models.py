@@ -32,7 +32,7 @@ class Sale(db.Model):
     date = db.Column(db.DateTime, nullable=False)
     car = db.relationship('Car', backref='sales')
     customer = db.relationship('Customer', backref='sales')
-    
+
 class ServiceAppointment(db.Model):
     __tablename__ = 'service_appointment'
     id = db.Column(db.Integer, primary_key=True)
@@ -45,7 +45,12 @@ class ServiceAppointment(db.Model):
 class Cart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
-    service_id = db.Column(db.Integer, db.ForeignKey('service_appointment.id'), nullable=False)
+    item_type = db.Column(db.String(50), nullable=False)  # 'car' or 'service'
+    item_id = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
+
     customer = db.relationship('Customer', backref='cart_items', lazy=True)
-    service = db.relationship('ServiceAppointment', backref='cart_items', lazy=True)
+
+    def __repr__(self):
+        return f'<Cart {self.item_type} {self.item_id}>'
+
